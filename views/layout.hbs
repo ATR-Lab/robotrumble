@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bots</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/flipclock.css">
+</head>
+<body>
+
+<header class="masthead">
+{{{body}}}
+</header>
+<script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<!-- Login -->
+{{!-- <script src="https://app.tor.us/embed.min.js" integrity="sha256-hq29/zh1T7jaH41IlICtfLI0pvHAdjXW4OZ2P3agMSM=" crossorigin="anonymous"></script> --}}
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@portis/web3/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.1.0/firebase-database.js"></script>
+<script src="js/flipclock.min.js"></script>
+<script src="js/robotcontract.js"></script>
+
+<script>
+  function loginWithPortis() {
+    portis.showPortis();
+  }
+</script>
+<script type="text/javascript">
+  var clock;
+  const Http = new XMLHttpRequest();
+
+  var driveSeatsAllState = "All seats are available!"
+  var driveSeatsOneState = "One seat available!"
+
+  function emitStart() {
+    const url='/robots'; // TODO: emits ACF.methods.startGame() event
+    Http.open("GET", url);
+    Http.send();
+    Http.onreadystatechange=(e)=>{
+      console.log(Http.responseText)
+    }
+  }
+
+  function sendAddress(address) {
+    const url='/getaccount'; // TODO: emits ACF.methods.startGame() event
+    var params="address="+address
+    Http.open("GET", url+"?"+params, true);
+    Http.send();
+    Http.onreadystatechange=(e)=>{
+      console.log(Http.responseText)
+    }
+  }
+
+  $(document).ready(function() {
+    var clock;
+
+    clock = $('.clock').FlipClock({
+          clockFace: 'DailyCounter',
+          autoStart: false,
+          callbacks: {
+            stop: function() {
+              $('.clock').html('<h1>Let the racing begin!</h1>')
+              emitStart()
+              sendAddress(web3.eth.accounts[0])
+            }
+          }
+      });
+
+      clock.setTime(0900);
+      clock.setCountdown(true);
+      clock.start();
+  });
+
+  function showButtons() {
+    var x = document.getElementById("button");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+}
+</script>
+
+<!-- Load the Twitch embed script -->
+<script src="https://embed.twitch.tv/embed/v1.js"></script>
+
+<!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
+<script type="text/javascript">
+  new Twitch.Embed("twitch-embed", {
+    width: 854,
+    height: 480,
+    channel: "robotrumble900"
+  });
+</script>
+
+<script type="text/javascript">
+  function SwapDivPurchaseDriveAndControl(div1,div2)
+  {
+    d1 = document.getElementById(div1);
+    d2 = document.getElementById(div2);
+    if( d2.style.display == "none" )
+    {
+        d1.style.display = "none";
+        d2.style.display = "block";
+    }
+    else
+    {
+        d1.style.display = "block";
+        d2.style.display = "none";
+    }
+  }
+</script>
+
+<script>
+  $('#driver1-purchase-btn').on('click', function() {
+
+    portis.onLogin((walletAddress, email) => {
+      // you're logged in. TODO: make a payment, callback here.
+
+      // paycontract transactionobject.
+
+  		alert('Purchasing Driver 1.\nSHOULD OPEN PORTIS PAYMENT.')
+      $('#driver1-purchase-btn').css({display: "none"})
+      $('#robot-1-button-holder').css({display: "block"})
+
+      document.getElementById("app").innerHTML = `
+      <div> Wallet Address: ${walletAddress} </div>
+    `;
+    });
+	});
+
+  $('#driver2-purchase-btn').on('click', function() {
+		alert('Purchasing Driver 2.\nSHOULD OPEN PORTIS PAYMENT.')
+
+    $('#driver2-purchase-btn').css({display: "none"})
+    $('#robot-2-button-holder').css({display: "block"})
+	});
+</script>
+
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyCROZYabBmr8eZlcbkRPmTvJcv8j2ZTlLE",
+    authDomain: "robotrumble-dcb1c.firebaseapp.com",
+    databaseURL: "https://robotrumble-dcb1c.firebaseio.com",
+    projectId: "robotrumble-dcb1c",
+    storageBucket: "robotrumble-dcb1c.appspot.com",
+    messagingSenderId: "214277502253",
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  console.log(firebase);
+  // Get a reference to the database service
+  var database = firebase.database();
+  var robot1Control = firebase.database().ref('controls/robot1')
+  var robot2Control = firebase.database().ref('controls/robot2')
+
+  var robot1State = firebase.database().ref('robots/robot1')
+  var robot2State = firebase.database().ref('robots/robot2')
+
+  robot1State.on('value', function(snapshot) {
+
+    var snap = snapshot.val()
+    console.log('SNAPSHOT: ' + JSON.stringify(snap))
+    if (snap.interactions){
+      $('#robot-1-interactions').html(snap.interactions)
+    }
+    if(snap.availableSeats == 1) {
+      $('#message-update').empty()
+      $('#message-update').append('<h2>' + driveSeatsOneState + '</h2>')
+    } else {
+      $('#message-update').empty()
+      $('#message-update').append('<h2>' + driveSeatsOneState + '</h2>')
+    }
+  });
+
+  robot2State.on('value', function(snapshot) {
+    var snap = snapshot.val()
+    console.log('SNAPSHOT: ' + JSON.stringify(snap))
+    if (snap.interactions){
+      $('#robot-2-interactions').html(snap.interactions)
+    }
+    if (snap.interactions) {
+      $('#robot-2-interactions').empty()
+      $('#robot-2-interactions').html(snap.interactions)
+    }
+    if(snap.availableSeats == 1) {
+      $('#message-update').empty()
+      $('#message-update').append('<h2>' + driveSeatsOneState + '</h2>')
+    } else {
+      $('#message-update').empty()
+      $('#message-update').append('<h2>' + driveSeatsOneState + '</h2>')
+    }
+
+  });
+
+  var robot1Interactions = robot1State.database().ref('/interactions')
+  var robot2Interactions = robot2State.database().ref('/interactions')
+
+  $( "#driver-2-arrow-forward").click(function() {
+    robot2Interactions.transaction(function(interactions){
+      return (interactions || 0) + 1;
+    })
+    payRobot()
+  });
+  $( "#driver-2-arrow-right").click(function() {
+    payRobot()
+  });
+  $( "#driver-2-arrow-left").click(function() {
+    payRobot()
+  });
+  $( "#driver-2-arrow-reload").click(function() {
+    payRobot()
+  });
+  $( "#driver-1-arrow-forward").click(function() {
+    payRobot()
+  });
+
+  $( "#driver-1-arrow-right").click(function() {
+    payRobot()
+  });
+  $( "#driver-1-arrow-left").click(function() {
+    payRobot()
+  });
+
+  $( "#driver-1-arrow-reload").click(function() {
+    payRobot()
+  });
+
+  // robotId: {1, 2}
+  // command: {l, f, re, r} //left, forward, reload, right
+  function moveRobot(robotId, command) {
+    console.log('ROBOTID: ' + robotId + ' COMMAND: ' + command)
+    console.log('ID TYPEOF: ' + typeof robotId)
+    switch(command) {
+      case 'l':
+        console.log('LEFT l')
+        if(robotId == 1) {
+          robot1Control.update({value: 'l'})
+
+        } else {
+          robot2Control.update({value: 'l'})
+        }
+        break
+      case 'u':
+        console.log('UP u')
+        if(robotId == 1) {
+          robot1Control.update({value: 'u'})
+        } else {
+          robot2Control.update({value: 'u'})
+        }
+        break
+      case 'r':
+        console.log('RIGHT r')
+        if(robotId == 1) {
+          robot1Control.update({value: 'r'})
+        } else {
+          robot2Control.update({value: 'r'})
+        }
+        break
+      case 're':
+       console.log('RELOAD re')
+        if(robotId == 1) {
+          robot1Control.update({value: 're'})
+        } else {
+          robot2Control.update({value: 're'})
+        }
+        break
+    }
+  }
+</script>
+
+<script>
+  function changeImage(driverId) {
+    var imgId = ''
+    if(driverId === '1') {
+      imgId = $('#driver-1-img').attr('src');
+    } else {
+      imgId = $('#driver-2-img').attr('src');
+    }
+    {{!-- console.log('IMGSRC:: ' + imgId) --}}
+    var n = imgId.indexOf('.');
+    imgId = imgId.substring(0, n != -1 ? n : imgId.length);
+    {{!-- console.log('IMGID PARSED: ' + imgId.substring(imgId.length -1, imgId.length)) --}}
+    var integer = parseInt(imgId.substring(imgId.length -1, imgId.length), 10);
+    {{!-- console.log('GIF INT:: ' + integer) --}}
+    var newImg = ''
+    if(integer === 5) {
+      newImg = '1.gif'
+    } else {
+      integer = integer + 1
+      newImg = integer + '.gif'
+      {{!-- console.log('NEWIMG:: ' + newImg) --}}
+    }
+
+    if(driverId === '1') {
+      $('#driver-1-img').attr('src','/img/' + newImg);
+    } else {
+      $('#driver-2-img').attr('src','/img/' + newImg);
+    }
+
+  }
+</script>
+
+</body>
+</html>
